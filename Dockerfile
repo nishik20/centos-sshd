@@ -1,5 +1,6 @@
 FROM centos
 
+RUN yum update -y
 RUN yum install -y passwd
 RUN yum install -y openssh
 RUN yum install -y openssh-server
@@ -18,7 +19,8 @@ RUN echo 'root:docker' | chpasswd
 RUN useradd docker
 RUN echo 'docker:docker' | chpasswd
 RUN echo "docker    ALL=(ALL)       ALL" >> /etc/sudoers.d/docker
+RUN chmod 644 /etc/sudoers.d/docker
 
 # sshd start
 EXPOSE 22
-CMD /usr/sbin/sshd -D
+CMD ["/usr/sbin/sshd", "-D"]
