@@ -1,4 +1,4 @@
-FROM centos
+FROM centos:6
 
 RUN yum update -y
 RUN yum install -y passwd
@@ -7,14 +7,13 @@ RUN yum install -y openssh-server
 RUN yum install -y openssh-clients
 RUN yum install -y sudo
 
-# sshd setup 
-RUN sed -i s/"session    required     pam_selinux.so close"/"#session    required     pam_selinux.so close"/g /etc/pam.d/sshd
-RUN sed -i s/"session    required     pam_loginuid.so"/"#session    required     pam_loginuid.so"/g /etc/pam.d/sshd
-RUN sed -i s/"session    required     pam_selinux.so open env_params"/"#session    required     pam_selinux.so open env_params"/g /etc/pam.d/sshd
-RUN /etc/init.d/sshd start
-RUN /etc/init.d/sshd stop
+# sshd setup
+RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
+RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
+RUN /sbin/service sshd start
+RUN /sbin/service sshd stop
 
-# user setup 
+# user setup
 RUN echo 'root:docker' | chpasswd
 RUN useradd docker
 RUN echo 'docker:docker' | chpasswd
